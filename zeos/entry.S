@@ -52,5 +52,32 @@
       movl %edx, %es
 
 #define RESTORE_ALL \
+      pushl %ebx; \
+      pushl %ecx; \
+      pushl %edx; \
+      pushl %esi; \
+      pushl %edi; \
+      pushl %ebp; \
+      pushl %eax; \
+      pushl %ds; \
+      pushl %es; \
+      pushl %fs; \
+      pushl %gs; 
 
-      
+#define EOI\
+      movb $0x20, %al; \
+      outb %al, $0x20; 
+
+ENTRY(clock_handler)
+      SAVE_ALL
+      RESTORE_ALL
+      iret
+
+ENTRY(keyboard_handler)
+      SAVE_ALL
+      RESTORE_ALL
+      iret
+ENTRY(system_call_handler)
+      SAVE_ALL
+      RESTORE_ALL
+      iret
