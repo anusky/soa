@@ -4,6 +4,7 @@
 
 #include <asm.h>
 #include <segment.h>
+#include <errno.h>
 
 
 /**************************************************/
@@ -70,14 +71,30 @@
 
 ENTRY(clock_handler)
       SAVE_ALL
+      EOI
+      call clock_routine
       RESTORE_ALL
       iret
 
 ENTRY(keyboard_handler)
       SAVE_ALL
+      EOI
+      call keyboard_routine
       RESTORE_ALL
       iret
+
 ENTRY(system_call_handler)
-      SAVE_ALL
-      RESTORE_ALL
-      iret
+      SAVE_ALL                                  //Save the current context 
+      cmpl $0, %eax                             //Is syscall number negative?
+      jl err                                    //If it is, jump to ret an error
+      cmpl $MAX_SYSCALL, %eax                   //Is syscall greater than MAX_SYSCALL (4) ?
+      jg err                                    //If it is, jump to ret an error
+      call *sys_call_table(, %eax, 0x04)        //Call the corresponding service routine
+      jmp fin                                   //Finish
+err:                                            
+      movl $-ENOSYS, %eax                       //Move to eax, the ENOSYS error
+fin:                                            
+      movl %eax, 0x18(%ebp)                     //Change the eax value n the stack
+      RESTORE_ALL                               //Restore the context
+      iret                                      
+
