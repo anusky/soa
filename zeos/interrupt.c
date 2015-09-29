@@ -44,7 +44,7 @@ void keyboard_routine() {
     * 0 - Make - Key Pressed
     * 1 - Break - Key Released
     */
-    printc_xy(0, 0, char_map[c & 0x7f]);
+    printc_xy(0, 0, char_map[(c & 0x7f)]);
     /*
     * c & 0x7f para recoger los 7 bits restantes de 'c' que indican el caracter 
     * correspondiente a la tecla pulsada  
