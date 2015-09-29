@@ -8,7 +8,7 @@ char buff[24];
 int pid;
 
 int add(int par1, int par2) {
-int ret;
+	int ret;
 	//=a le indicamos que quiero usar el registro a y que guardare alli 
 	//la suma de par1 y par2 
 	//"b"(par2) le indico que quiero usar el registro b, y que cargo en él, el contenido de par2
@@ -49,7 +49,7 @@ int __attribute__ ((__section__(".text.main")))
 	acum = outer(count);
 */
 	
-	add(1, 2); //res 3
+	//dd(1, 2); //res 3
 	
 	
     /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
