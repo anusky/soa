@@ -57,7 +57,7 @@ int write(int fd, char * buffer, int size) {
   __asm__ volatile(
     "int $0x80\n\t" //enter kernel mode - modo sys
     : "=a" (res)
-    : "a"(4), "b" (fd), "c"(buffer), "d"(size));
+    : "a"(4), "b" ( fd), "c"(buffer), "d"(size));
   if (res < 0) {
     errno = -res; //hay error, modifico errno cn el valor del error en absoluto
     return -1; //retorno al usuario -1
