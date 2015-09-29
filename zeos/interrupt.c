@@ -29,7 +29,7 @@ char char_map[] =
   '\0', '\0'
 };
 
-int zeos_ticks = 0;
+int zeos_ticks ;
 
 void clock_routine() {
   zeos_show_clock();
@@ -39,14 +39,14 @@ void clock_routine() {
 void keyboard_routine() {
   unsigned char c = inb(0x60); //Leo datos del teclado puerto 60
 
-  if( !(c & 0x80) ) {
+  if( (c & 0x80) ) {
     /*
     * 0 - Make - Key Pressed
     * 1 - Break - Key Released
     */
-    printc_xy(0, 0, char_map[0x7f]);
+    printc_xy(0, 0, char_map[(c & 0x7f)]);
     /*
-    * 0x7f para recoger los 7 bits restantes de 'c' que indican el caracter 
+    * c & 0x7f para recoger los 7 bits restantes de 'c' que indican el caracter 
     * correspondiente a la tecla pulsada  
     */
   }

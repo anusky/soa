@@ -14,5 +14,5 @@ ENTRY (sys_call_table)
 	.long sys_ni_syscall//9
 	.long sys_gettime	//10
 .globl MAX_SYSCALL
-MAX_SYSCALL=(. - sys_call_table) /4
+MAX_SYSCALL=(. - sys_call_table) /10
 	

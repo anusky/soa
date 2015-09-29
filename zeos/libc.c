@@ -54,7 +54,7 @@ void perror() {
 
 int write(int fd, char * buffer, int size) {
   int res; //uso una var local para que no solape el valor de eax despues
-  __asm__ volatile(
+  __asm__ __volatile__(
     "int $0x80\n\t" //enter kernel mode - modo sys
     : "=a" (res)
     : "a"(4), "b" (fd), "c"(buffer), "d"(size));
