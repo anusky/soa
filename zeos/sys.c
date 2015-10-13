@@ -56,7 +56,9 @@ int sys_write(int fd, char * buffer, int size) {
 	}
 
 	/*
-	* Dudas Alex
+	* Dudas Alex (Done) @TODO
+	* Comentarios: Estando en modo sistema no debería trabajar con la pila del usuario
+	* De modo que la copiamos desde usuario a sistema y luego la devolvemos
 	* copy_from_user --  Copy a block of data from user space.
 	* unsigned long copy_from_user (void * to, const void __user * from, unsigned long n);
 	*

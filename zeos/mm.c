@@ -106,6 +106,10 @@ void set_user_pages( struct task_struct *task )
 }
 
 /* Writes on CR3 register producing a TLB flush */
+/* 	
+* 	Invalidamos el TLB para no usar entradas que podrian 
+*	haber quedado mal tras modificar la tabla de paginas
+*/
 void set_cr3(page_table_entry * dir)
 {
  	asm volatile("movl %0,%%cr3": :"r" (dir));
