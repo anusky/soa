@@ -77,3 +77,31 @@ int gettime()
   errno = 0;
   return res;
 }
+
+int getpid()
+{
+  int res;
+
+  __asm__ __volatile__ (
+    "int $0x80\n\t"
+    :"=a" (res)
+    :"a" (20) );
+  errno = 0;
+  return res;
+}
+int fork()
+{
+  int res;
+
+  __asm__ __volatile__ (
+    "int $0x80\n\t"
+    :"=a" (res)
+    :"a" (2) );
+  if (res<0)
+  {
+    errno = -res;
+    return -1;
+  }
+  errno=0;
+  return res;
+}

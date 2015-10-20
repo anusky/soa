@@ -29,6 +29,8 @@ struct list_head freequeue;
 /* task struct listas para ejecutarse */
 struct list_head readyqueue;
 
+struct task_struct * idle_task;
+
 
 /* get_DIR - Returns the Page Directory address for task 't' */
 page_table_entry * get_DIR(struct task_struct * t) {
@@ -86,12 +88,35 @@ void init_idle(void) {
 	* Le tengo que pasar el &freequeue
 	*/
 	struct list_head * available = list_first( &freequeue );
-	available.task.PID = 0;
+  list_del(available);
+  struct task_struct *task_available =list_head_to_task_struct( available );
+  union task_union *new = (union task_union*)task_available;
+
+  task_available->PID = 0;
+	allocate_DIR( task_available );
+
+  new->stack[KERNEL_STACK_SIZE - 2] = 0; /*registro ebp a 0 - Indico inicio del codigo*/
+  new->stack[KERNEL_STACK_SIZE - 1] = (unsigned long)&cpu_idle; /*Aqui me guardo la direccion de retorno a cpu_idle*/
 	
-	
+  task_available->register_esp = (int) &(new->stack[KERNEL_STACK_SIZE-2]);
+
+
+	idle_task = task_available;
 }
 
 void init_task1(void) {
+  struct list_head *available = list_first( &freequeue );
+  list_del(available);
+  struct task_struct *task_available =list_head_to_task_struct( available );
+  union task_union *new = (union task_union*)task_available;
+
+  task_available->PID = 1;
+  allocate_DIR ( task_available );
+
+  set_user_pages( task_available );
+
+  tss->esp0 = (DWord) &(new->stack[KERNEL_STACK_SIZE]);
+  set_cr3( task_available->dir_pages_baseAddr);
 
 }
 
@@ -111,4 +136,49 @@ struct task_struct* current()
 	: "=g" (ret_value)
   );
   return (struct task_struct*)(ret_value&0xfffff000);
+}
+
+void inner_task_switch(union task_union *new) {
+  page_table_entry *new_direction = get_DIR(&new->task);
+
+  tss->esp0 = (DWord) &(new->stack[KERNEL_STACK_SIZE]); //actualizo el TSS para que apunte a la nueva pila
+  
+
+  set_cr3( new_direction ); //hacemos flush de la TLB actualizando el cr3 y creando un nuevo espacio de direcciones
+
+    /*nos guardamos el valor de ebp y lo guardamos en el registro_esp del actual PCB*/
+  __asm__ __volatile__ (
+    "movl %%ebp, %0\n\t"
+    : "=g" (current()->register_esp)
+    :);
+
+    /*restauramos el nuevo valor de esp y lo guardamos en el esp del nuevo PCB*/
+  __asm__ __volatile__ (
+    "movl %0, %%ebp\n\t"
+    :
+    :"g" (new->task.register_esp));
+
+  /* restauramos el valor de ebp de la pila */
+  __asm__ __volatile__ (
+    "popl %%ebp\n\t");
+
+  /* usamos la instruccion ret para volver a la rutina que nos llamo */
+  __asm__ __volatile__ (
+    "ret\n\t");
+
+}
+
+void task_switch(union task_union *new) {
+  __asm__ __volatile__ (
+    "pushl %esi\n\t"
+    "pushl %edi\n\t"
+    "pushl %ebx\n\t" );
+
+  inner_task_switch(new);
+
+  __asm__ __volatile__ (
+    "pushl %esi\n\t"
+    "pushl %edi\n\t"
+    "pushl %ebx\n\t" );
+  
 }
