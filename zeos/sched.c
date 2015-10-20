@@ -31,6 +31,10 @@ struct list_head readyqueue;
 
 struct task_struct * idle_task;
 
+/*variables para el scheduling*/
+#define DEFAULT_QUANTUM 10
+int remaining_quantum=0;
+
 
 /* get_DIR - Returns the Page Directory address for task 't' */
 page_table_entry * get_DIR(struct task_struct * t) {
@@ -181,4 +185,71 @@ void task_switch(union task_union *new) {
     "pushl %edi\n\t"
     "pushl %ebx\n\t" );
   
+}
+
+int get_quantum(struct task_struct *t) {
+  return t->total_quantum;
+}
+
+void set_quantum(struct task_struct *t, int new_quantum) {
+  t->total_quantum = new_quantum;
+}
+
+void update_sched_data_rr() {
+  remaining_quantum--;
+}
+
+int needs_sched_rr() {
+  if( (remaining_quantum == 0) && (!list_empty(&readyqueue)) ) return 1;
+  if (remaining_quantum==0) remaining_quantum=get_quantum(current());
+  return 0;
+}
+
+void update_process_state_rr(struct task_srtuct *t, struct list_head *dst_queue) {
+  if (t->state!=ST_RUN) list_del(&(t->list));
+  if (dst_queue!=NULL)
+  {
+    list_add_tail(&(t->list), dst_queue);
+    if (dst_queue!=&readyqueue) t->state=ST_BLOCKED;
+    else
+    {
+      update_stats(&(current()->p_stats.system_ticks), &(current()->p_stats.elapsed_total_ticks));
+      t->state=ST_READY;
+    }
+  }
+  else t->state=ST_RUN;
+}
+
+void sched_next_rr() {
+  struct list_head *e;
+  struct task_struct *t;
+
+  e=list_first(&readyqueue);
+
+  if (e)
+  {
+    list_del(e);
+
+    t=list_head_to_task_struct(e);
+  }
+  else
+    t=idle_task;
+
+  t->state=ST_RUN;
+  remaining_quantum=get_quantum(t);
+
+  update_stats(&(current()->p_stats.system_ticks), &(current()->p_stats.elapsed_total_ticks));
+  update_stats(&(t->p_stats.ready_ticks), &(t->p_stats.elapsed_total_ticks));
+  t->p_stats.total_trans++;
+
+  task_switch((union task_union*)t);
+}
+
+void schedule() {
+  update_sched_data();
+  if (needs_sched())
+  {
+    update_process_state(current(), &readyqueue);
+    sched_next();
+  }
 }

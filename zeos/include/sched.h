@@ -19,6 +19,9 @@ struct task_struct {
   page_table_entry * dir_pages_baseAddr; /* directory base address */
   struct list_head list; 
   int register_esp;
+  enum state_t state;
+  int total_quantum;
+  struct stats p_stats;	
 };
 
 union task_union {

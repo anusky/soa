@@ -105,3 +105,27 @@ int fork()
   errno=0;
   return res;
 }
+
+void exit(void)
+{
+  __asm__ __volatile__ (
+    "int $0x80\n\t"
+  :
+  :"a" (1) );
+}
+
+int get_stats(int pid, struct stats *st)
+{
+  int result;
+  __asm__ __volatile__ (
+    "int $0x80\n\t"
+  :"=a" (result)
+  :"a" (35), "b" (pid), "c" (st) );
+  if (result<0)
+  {
+    errno = -result;
+    return -1;
+  }
+  errno=0;
+  return result;
+}

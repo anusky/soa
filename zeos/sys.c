@@ -18,6 +18,10 @@
 #define LECTURA 0
 #define ESCRIPTURA 1
 
+extern int zeos_ticks;
+extern int remaining_quantum;
+
+
 int check_fd(int fd, int permissions)
 {
 	if (fd != 1) return -9; /*EBADF*/
@@ -33,6 +37,11 @@ int sys_ni_syscall()
 int sys_getpid()
 {
 	return current()->PID;
+}
+
+int ret_from_fork()
+{
+  return 0;
 }
 
 int sys_fork()
@@ -81,6 +90,41 @@ int sys_fork()
 	    set_ss_pag(process_pt, PAG_LOG_INIT_CODE+pag, get_frame(parent_pt, PAG_LOG_INIT_CODE+pag));
   	}
 
+  	/* Copy parent's DATA to child. We will use TOTAL_PAGES-1 as a temp logical page to map to */
+	for (pag=NUM_PAG_KERNEL+NUM_PAG_CODE; pag<NUM_PAG_KERNEL+NUM_PAG_CODE+NUM_PAG_DATA; pag++)
+	{
+	/* Map one child page to parent's address space. */
+		set_ss_pag(parent_PT, pag+NUM_PAG_DATA, get_frame(process_PT, pag));
+		copy_data((void*)(pag<<12), (void*)((pag+NUM_PAG_DATA)<<12), PAGE_SIZE);
+		del_ss_pag(parent_PT, pag+NUM_PAG_DATA);
+	}
+
+	//flush tlb
+	set_cr3( get_DIR( current() ) );
+	child->task.PID = global_PID++;
+	child->task.state = ST_READY;
+
+	int register_ebp;		/* frame pointer */
+	/* Map Parent's ebp to child's stack */
+	__asm__ __volatile__ (
+		"movl %%ebp, %0\n\t"
+	    : "=g" (register_ebp)
+	    : );
+	register_ebp=(register_ebp - (int)current()) + (int)(child);
+
+	child->task.register_esp=register_ebp + sizeof(DWord);
+	  
+	DWord temp_ebp=*(DWord*)register_ebp;
+	/* Prepare child stack for context switch */
+	child->task.register_esp-=sizeof(DWord);
+	*(DWord*)(child->task.register_esp)=(DWord)&ret_from_fork;
+	child->task.register_esp-=sizeof(DWord);
+	*(DWord*)(child->task.register_esp)=temp_ebp;
+
+	child->task.state=ST_READY;
+  	list_add_tail(&(child->task.list), &readyqueue);
+  
+  	return child->task.PID;
 }
 
 
@@ -109,7 +153,6 @@ int sys_write(int fd, char * buffer, int size) {
 	return ret;
 }
 
-extern int zeos_ticks;
 
 int sys_gettime() {
 	return zeos_ticks;
@@ -118,4 +161,41 @@ int sys_gettime() {
 
 void sys_exit()
 {
+  int i;
+
+  page_table_entry *process_PT = get_PT(current());
+
+  // Deallocate all the propietary physical pages
+  for (i=0; i<NUM_PAG_DATA; i++)
+  {
+    free_frame(get_frame(process_PT, PAG_LOG_INIT_DATA_P0+i));
+    del_ss_pag(process_PT, PAG_LOG_INIT_DATA_P0+i);
+  }
+  
+  /* Free task_struct */
+  list_add_tail(&(current()->list), &freequeue);
+  
+  current()->PID=-1;
+  
+  /* Restarts execution of the next process */
+  sched_next();
+}
+
+int sys_get_stats(int pid, struct stats *st)
+{
+  int i;
+  
+  if (!access_ok(VERIFY_WRITE, st, sizeof(struct stats))) return -EFAULT; 
+  
+  if (pid<0) return -EINVAL;
+  for (i=0; i<NR_TASKS; i++)
+  {
+    if (task[i].task.PID==pid)
+    {
+      task[i].task.p_stats.remaining_ticks=remaining_quantum;
+      copy_to_user(&(task[i].task.p_stats), st, sizeof(struct stats));
+      return 0;
+    }
+  }
+  return -ESRCH; /*ESRCH */
 }
