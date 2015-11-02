@@ -17,6 +17,7 @@
 
 #define LECTURA 0
 #define ESCRIPTURA 1
+#define TAM_BUFFER 512
 
 extern int zeos_ticks;
 extern int remaining_quantum;
@@ -129,19 +130,51 @@ int sys_fork()
 
 
 int sys_write(int fd, char * buffer, int size) {
+	/**
+	 *	fd - fileDescriptor. Aqui siempre sera 1
+	 * 	buffer - pointer to the bytes
+	 *	size - number of bytes to write
+	 *	Retorna -> num negativo si error (especifica el tipo de error) ; numero de bytes escritos si OK
+	 *	Creo un buffer para no perder info en caso que sea mayor al tamaño que puedo imprimir
+	 *	luego lo recorro, recogiendo de lapila del usuario lo necesario, clonandola en la pila de sistema.
+	 */
+	
+	
 	int ret;
 	if ( (ret = check_fd(fd, ESCRIPTURA)) ) {
 		return ret;
 	}
-	if (buffer == NULL) {
-		return -1; //Dudas Alex
-	}
 	if (size < 0) {
-		return -1;
+		return -EINVAL;
+	}
+	if(!access_ok(VERIFY_WRITE, buffer, size)) {
+		return -EFAULT;
+	}
+
+	int bytes_left = size;
+	char localbuffer[TAM_BUFFER];
+	while(bytes_left > TAM_BUFFER)  {
+		/* los bytes que quedan son mayores que mi buffer, trabajo con buffer. Copio la pila de usuario */
+		copy_from_user(buffer, localbuffer, TAM_BUFFER);
+		/* me traigo el buffer del usuario a éste, en local, que es el de sistema */
+		ret = sys_write_console(localbuffer, TAM_BUFFER);
+		bytes_left -= ret;
+		/* resto de los bytes que quedan, el tamaño de bytes que he escrito */
+		buffer += ret;
+		/* 	buffer es un puntero, lo avanzo con la cantidad de bytes que he usado, 
+		*	para posicionar el puntero en el siguiente dato que quiero escribir.
+		*/	
+	}
+
+	if(bytes_left > 0) {
+		/* me quedan bytes que escribir pero no llegan a ocupar lo suficiente para usar el buffer*/
+		copy_from_user(buffer, localbuffer, bytes_left);
+		ret = sys_write_console(localbuffer, bytes_left);
+		bytes_left -= ret;
 	}
 
 	/*
-	* Dudas Alex (Done) @TODO
+	* Dudas Alex (Done)
 	* Comentarios: Estando en modo sistema no debería trabajar con la pila del usuario
 	* De modo que la copiamos desde usuario a sistema y luego la devolvemos
 	* copy_from_user --  Copy a block of data from user space.
@@ -150,7 +183,9 @@ int sys_write(int fd, char * buffer, int size) {
 	* copy_to_user --  Copy a block of data into user space.
 	* unsigned long copy_to_user (void __user * to, const void * from, unsigned long n);
 	*/
-	return ret;
+
+	/* retorno la cantidad de bytes que he escrito */
+	return (size - bytes_left);
 }
 
 

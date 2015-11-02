@@ -200,15 +200,20 @@ void update_sched_data_rr() {
 }
 
 int needs_sched_rr() {
-  if( (remaining_quantum == 0) && (!list_empty(&readyqueue)) ) return 1;
-  if (remaining_quantum==0) remaining_quantum=get_quantum(current());
+  if( remaining_quantum == 0 && (!list_empty(&readyqueue)) ) {
+    return 1;
+  }
+  if( remaining_quantum == 0 ) {
+    remaining_quantum = get_quantum(current());
+  }
   return 0;
 }
 
-void update_process_state_rr(struct task_srtuct *t, struct list_head *dst_queue) {
-  if (t->state!=ST_RUN) list_del(&(t->list));
-  if (dst_queue!=NULL)
-  {
+void update_process_state_rr(struct task_struct *t, struct list_head *dst_queue) {
+  if(t->state != ST_RUN) {
+    list_del(&(t->list));
+  }
+  if(dst_queue != NULL) {
     list_add_tail(&(t->list), dst_queue);
     if (dst_queue!=&readyqueue) t->state=ST_BLOCKED;
     else
