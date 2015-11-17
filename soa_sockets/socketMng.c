@@ -15,9 +15,8 @@
 // the connection
 //
 
-int
-createServerSocket (int port)
-{
+int createServerSocket (int port) {
+	
 }
 
 

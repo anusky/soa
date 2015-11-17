@@ -27,9 +27,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  num_it = atoi(argv[1]);
-  hostname = argv[2];
-  port = atoi (argv[3]);
+  num_it = atoi(argv[1]); //numero de mensajes que manda al server
+  hostname = argv[2]; //hostnme para recibir mensajes cliente
+  port = atoi (argv[3]); //port
+  /*%./clientSocket msgNumber serverHost serverPort*/
   connectionFD = clientConnection (hostname, port);
   if (connectionFD < 0)
     {

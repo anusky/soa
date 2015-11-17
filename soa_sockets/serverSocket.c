@@ -4,6 +4,8 @@
 
 
 doService(int fd) {
+/*fd --> port number usado para el server*/
+/*usarlo con %./serverSocket port*/
 int i = 0;
 char buff[80];
 char buff2[80];
