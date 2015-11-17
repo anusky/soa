@@ -1,0 +1,69 @@
+1.a
+	Tenemos que añadir un nuevo estado al enum que indica los posibles estados por los que puede pasar un proceso.
+	Tendremos que añadir un traphandler al idt para que capte estas tres interrupciones.
+	Modificaremos las entradas de sys_call_table para añadir estas 3 interrupciones.
+	Añadiremos un campo a la task_struct que haga referencia a la lista de hijos de éste.
+1.b
+	Añadir una estructura que sea una list_head que contenga los hijos del actual proceso para mantener información de estos.
+1.c 
+	en interrupt.c  añadimos esta linea
+	setTrapHandler(0x83, system_call_handler, 3);
+	
+1.d	
+	En los wrappers de fork y exit ya no accederemos a las entradas 1 y 2 sino que las cambiaremos por las respectivas y tampoco llamaremos a la interrupcion 0x80 como antes sino que accederemos a la 0x83
+	Luego exit ahora devuelve el estado del proceso para que el padre lo consulte si desea. asi que deja de ser void, recoge el estado en eax y lo devuelve.
+	
+1.e
+	Así queda el wrapper de la llamada wait
+	int wait(int *status)
+	{
+	  int result;
+	  
+	  __asm__ __volatile__ (
+	  	"int $0x83\n\t"
+		:"=a" (result)
+		:"a" (5) );
+	  
+	  return result;
+	}
+
+1.f (código)
+ 
+1.g
+	No, el cambio es solo de sistema
+	
+1.h (código)
+
+
+PREGUNTA 2
+2.a
+	Se tiene que añadir el pid del padre en cada proceso.
+	Como en la anterior, cada task_struct mantiene una pila de sus procesos hijos guardads.
+
+2.b
+	Añadiremos una cola de procesos (list_head) en estado ZOMBIE (zombiequeue) al sistema para tener un control actualizado.	
+
+2.c
+	En el inicio del sistema inicializaremos la cola de procesos zombiequeue dejandola vacía. Y dentro de la llamada de exit, siguiendo el enunciado, cuando toque, pasaremos a añadir el proceso en esta cola.
+	En cuanto a los campos de la task_struct como están relacionados con el hecho de crear procesos nuevos, los usaremos en el fork.
+	
+
+2.d
+	Liberaremos los PCB's cuando la zombiequeue alcance su límite, cuando terminen todos los procesos o cuando frequeue quede vacía.
+
+2.e
+	Si, debemos añadir una restriccion que indique que al ser el proceso inicial, no tiene padre. el parent_PID = -1;
+
+2.f
+	Antes mirabamos si teniamos la cola de freequeue vacía, y en cuyo caso devolvíamos error, ahora lo que hacemos es revisar si hay procesos encolados en la zombiequeue. Si los hay, liberamos un PCB de un proceso zombie y luego se lo asignamos al proceso que se quiere crear.
+	
+	
+2.g
+	Antes teníamos este for, que se encargaba de liberar el 
+	list_add_tail(&(current()->list), &freequeue);
+	Ahora no nos es necesario puesto que este paso lo realizaremos en otro lugar.
+	
+
+
+		
+

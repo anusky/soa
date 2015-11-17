@@ -1,0 +1,6 @@
+1- Can system resources be shared among user-mode processes
+	yes they can.
+2-	object-base security
+	
+3-	physical devices.
+

@@ -89,8 +89,6 @@ int __attribute__((__section__(".text.main")))
 
   /* Initialize Scheduling */
   init_sched();
-  
-  zeos_console_init();
 
   /* Initialize idle task  data */
   init_idle();

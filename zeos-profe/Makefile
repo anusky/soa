@@ -28,12 +28,10 @@ LINKFLAGS = -g
 
 SYSOBJ = interrupt.o entry.o sys_call_table.o io.o sched.o sys.o mm.o devices.o utils.o hardware.o list.o
 
-#incluyo las librerias necesarias del scheduling
-LIBZEOS = -L . -l zeos libschedperf.a
+LIBZEOS = -L . -l zeos
 
 #add to USROBJ the object files required to complete the user program
-#USROBJ = libc.o # libjp.a
-USROBJ = libc.o libuser.a 
+USROBJ = libc.o # libjp.a
 
 all:zeos.bin
 

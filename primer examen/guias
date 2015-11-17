@@ -1,0 +1,9 @@
+bochs -f .bochsrc_gdb -q
+
+gdb system
+target remote localhost:1234
+add-symbol-file user 0x100010
+
+(gdb)
+set disassemble-next-line on
+stepi

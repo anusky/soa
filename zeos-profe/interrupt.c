@@ -34,9 +34,6 @@ int zeos_ticks ;
 void clock_routine() {
   zeos_show_clock();
   zeos_ticks++;
-  zeos_update_read_console_emul();
-
-  schedule();
 }
 
 void keyboard_routine() {
