@@ -1,0 +1,351 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"list",
+				"list_add_tail"
+			],
+			[
+				"updat",
+				"update_process_state"
+			],
+			[
+				"sys",
+				"sys_write_console"
+			],
+			[
+				"local",
+				"localbuffer"
+			],
+			[
+				"tam",
+				"TAM_BUFFER"
+			],
+			[
+				"copy_",
+				"copy_from_user"
+			],
+			[
+				"comm",
+				"comm	Comment - Single-line block comment"
+			],
+			[
+				"byte",
+				"bytes_left"
+			],
+			[
+				"new",
+				"new_quantum"
+			],
+			[
+				"proces",
+				"process_pt"
+			],
+			[
+				"pa",
+				"PAG_LOG_INIT_DATA"
+			],
+			[
+				"proc",
+				"process_pt"
+			],
+			[
+				"regis",
+				"register_esp"
+			],
+			[
+				"__",
+				"__volatile__"
+			],
+			[
+				"ge",
+				"get_DIR"
+			],
+			[
+				"task_",
+				"task_union"
+			],
+			[
+				"dir_pag",
+				"dir_pages_baseAddr"
+			],
+			[
+				"task",
+				"task_available"
+			],
+			[
+				"dis",
+				"dir_pages_baseAddr"
+			],
+			[
+				"list_",
+				"list_head_to_task_struct"
+			],
+			[
+				"char",
+				"char_map"
+			],
+			[
+				"sy",
+				"system_call_handler"
+			],
+			[
+				"sys_",
+				"sys_write"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 75.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 349.0
+	},
+	"console":
+	{
+		"height": 109.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"install"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/anusky/soa/soa_sockets"
+	],
+	"file_history":
+	[
+		"/home/anusky/soa/zeos/utils.c",
+		"/home/anusky/soa/zeos/include/sched.h",
+		"/home/anusky/soa/zeos/sys_call_table.S",
+		"/home/anusky/soa/zeos/list.c",
+		"/home/anusky/soa/zeos/include/list.h",
+		"/home/anusky/soa/zeos/mm.c",
+		"/home/anusky/soa/zeos/sched.c",
+		"/home/anusky/soa/zeos/include/mm_address.h",
+		"/home/anusky/soa/zeos/interrupt.c",
+		"/home/anusky/soa/zeos/libc.c",
+		"/home/anusky/soa/zeos/sys.c",
+		"/home/anusky/soa/zeos/include/errno.h",
+		"/home/anusky/soa/zeos/include/system.h",
+		"/home/anusky/soa/zeos/include/types.h",
+		"/home/anusky/soa/zeos/system.c",
+		"/home/anusky/soa/zeos/user.c",
+		"/home/anusky/soa/zeos/hardware.c",
+		"/home/anusky/soa/zeos/entry.S",
+		"/home/anusky/soa/zeos/include/zeos_interrupt.h",
+		"/home/anusky/soa/zeos/io.c",
+		"/home/anusky/soa/zeos/devices.c",
+		"/home/anusky/soa/zeos/include/keyboard.h",
+		"/home/anusky/soa/zeos/sys_call_table.s",
+		"/home/anusky/soa/chuleta",
+		"/home/anusky/soa/zeos/Makefile",
+		"/home/anusky/soa/prepareSOA.sh",
+		"/home/anusky/.config/sublime-text-3/Packages/HTML-CSS-JS Prettify/.jsbeautifyrc",
+		"/home/anusky/soa/zeos/algo.js",
+		"/home/anusky/.config/sublime-text-3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings"
+	],
+	"find":
+	{
+		"height": 29.0
+	},
+	"find_in_files":
+	{
+		"height": 75.0,
+		"where_history":
+		[
+			"/home/anusky/soa/zeos",
+			"/home/anusky/soa/zeos/include",
+			"/home/anusky/soa/zeos"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"add_t",
+			"empty",
+			"tick",
+			"getpi",
+			"entry;",
+			"copy_from_user",
+			"access_ok",
+			"uchild",
+			"global",
+			"i",
+			"NUM_PAG_DATA",
+			"result",
+			"task_switch",
+			"TASK_SWITCH",
+			"tss",
+			"codigo",
+			"KERNEL",
+			".",
+			"sys_write_console",
+			"wrapper",
+			"pushl",
+			"default",
+			"foo",
+			"ret",
+			"par1",
+			"(gdb)",
+			"{",
+			"export"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 21.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.astyle_error_message":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "soa_sockets.sublime-project",
+	"replace":
+	{
+		"height": 38.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"sched",
+				"sched.c"
+			],
+			[
+				"mm.c",
+				"mm.c"
+			],
+			[
+				"list",
+				"include/list.h"
+			],
+			[
+				"sche",
+				"include/sched.h"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 375.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 285.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 170.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
