@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-#define MAX_NUM_CHILDS 5;
+#define MAX_NUM_CHILDS 5
 int childrenAlive = 0;
 
 doService(int fd) {
@@ -75,7 +75,7 @@ main (int argc, char *argv[])
 
   while (1) {
   		
-	if(childrenAlive <= MAX_NUM_CHILDS) 
+	if(childrenAlive <= MAX_NUM_CHILDS) {
 		connectionFD = acceptNewConnections (socketFD);
 		if (connectionFD < 0)
 		{
