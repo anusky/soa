@@ -96,7 +96,8 @@ int acceptNewConnections (int socket_fd) {
 
   int canal = accept(socket_fd, &(serv_addr), &(tam));
   if(canal < 0) {
-    return EAGAIN;
+    perror("no se ha podido aceptar la conexion");
+    return -1;
   }
 
   return canal;

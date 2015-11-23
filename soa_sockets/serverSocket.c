@@ -3,6 +3,9 @@
 #include <stdio.h>
 
 
+#define MAX_NUM_CHILDS 5;
+int childrenAlive = 0;
+
 doService(int fd) {
 /*fd --> port number usado para el server*/
 /*usarlo con %./serverSocket port*/
@@ -36,6 +39,7 @@ int socket_fd = (int) fd;
 doServiceFork(int fd) {
 	int pid = fork();
 	if(pid != -1) {
+		childrenAlive += 1;
 		doService(fd);
 		exit(0);
 	}
@@ -70,15 +74,22 @@ main (int argc, char *argv[])
     }
 
   while (1) {
-	  connectionFD = acceptNewConnections (socketFD);
-	  if (connectionFD < 0)
-	  {
-		  perror ("Error establishing connection \n");
-		  deleteSocket(socketFD);
-		  exit (1);
-	  }
+  		
+	if(childrenAlive <= MAX_NUM_CHILDS) 
+		connectionFD = acceptNewConnections (socketFD);
+		if (connectionFD < 0)
+		{
+			perror ("Error establishing connection \n");
+			deleteSocket(socketFD);
+			exit (1);
+		}
+	  doServiceFork(connectionFD);
+	}
+	else {
+		//libero hijos para poder usarlos de nuevo
+		while(waitpid(-1, NULL, 0) > WNOHANG);
+	} 
 
-	  doService(connectionFD);
   }
 
 }
