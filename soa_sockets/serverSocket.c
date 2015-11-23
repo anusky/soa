@@ -33,6 +33,17 @@ int socket_fd = (int) fd;
 
 }
 
+doServiceFork(int fd) {
+	int pid = fork();
+	if(pid != -1) {
+		doService(fd);
+		exit(0);
+	}
+	else {
+		perror("Error creating child");
+	}
+}
+
 
 main (int argc, char *argv[])
 {
