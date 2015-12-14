@@ -10,7 +10,7 @@ LD86	= ld86 -0
 
 HOSTCFLAGS = -Wall -Wstrict-prototypes -g
 HOSTCC 	= gcc
-CC      = gcc
+CC      = gcc 
 AS      = as
 LD      = ld
 OBJCOPY = objcopy -O binary -R .note -R .comment -S
@@ -18,22 +18,20 @@ OBJCOPY = objcopy -O binary -R .note -R .comment -S
 INCLUDEDIR = include
 
 # Define here flags to compile the tests if needed
-JP =
+JP = 
 
-CFLAGS = -O2  -g $(JP) -fno-omit-frame-pointer -ffreestanding -Wall -I$(INCLUDEDIR)
+CFLAGS = -O2  -g $(JP) -fno-omit-frame-pointer -ffreestanding -Wall -I$(INCLUDEDIR) 
 ASMFLAGS = -I$(INCLUDEDIR)
 SYSLDFLAGS = -T system.lds
 USRLDFLAGS = -T user.lds
-LINKFLAGS = -g
+LINKFLAGS = -g 
 
-SYSOBJ = interrupt.o entry.o sys_call_table.o io.o sched.o sys.o mm.o devices.o utils.o hardware.o list.o
+SYSOBJ = interrupt.o entry.o sys_call_table.o io.o sched.o sys.o mm.o devices.o utils.o hardware.o list.o p_stats.o
 
-#incluyo las librerias necesarias del scheduling
-LIBZEOS = -L . -l zeos libschedperf.a
+LIBZEOS = -L . -l zeos #-l auxjp
 
 #add to USROBJ the object files required to complete the user program
-#USROBJ = libc.o # libjp.a
-USROBJ = libc.o libuser.a 
+USROBJ = libc.o # libjp.a
 
 all:zeos.bin
 
@@ -76,6 +74,7 @@ sys.o:sys.c $(INCLUDEDIR)/devices.h
 
 utils.o:utils.c $(INCLUDEDIR)/utils.h
 
+p_stats.o:p_stats.c $(INCLUDEDIR)/utils.h
 
 system.o:system.c $(INCLUDEDIR)/hardware.h system.lds $(SYSOBJ) $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/system.h $(INCLUDEDIR)/sched.h $(INCLUDEDIR)/mm.h $(INCLUDEDIR)/io.h $(INCLUDEDIR)/mm_address.h 
 
@@ -106,4 +105,4 @@ gdb: zeos.bin
 	bochs -q -f .bochsrc_gdb
 
 emuldbg: zeos.bin
-	bochs_nogdb -q -f .bochsrc
+	$(HOME)/bochs/bin/bochs -q -f .bochsrc
