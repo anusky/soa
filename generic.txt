@@ -1,0 +1,10 @@
+Competencia transversal
+1.How cana memory re....
+when there is enough free memory
+
+2.In whichc...
+when handling interruption or executing code in critical region.
+
+3.
+a kernoel control path shoud issue atomic memory allocation.
+

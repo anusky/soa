@@ -1,0 +1,124 @@
+Respuestas
+
+EJERCICIO 1 PFGET 
+a)
+
+	void pfget(unsigned long id)
+	{
+	  int result;
+	  __asm__ __volatile__ (
+	  	"int $0x80\n\t"
+	  :"=a" (result)
+	  :"a" (12) );
+	  if (result<0)
+	  {
+	    errno = -result;
+	    return -1;
+	  }
+	  errno=0;
+	  return result;
+	}
+
+b)Estructuras que se modifican y como 
+	Añadimos en la sys_cal_table esta llamada pfget en la entrada de la tabla #12
+
+
+c) Nuevas estructuras que se incluyen
+
+	Como sólo habrán como mucho 10 asociaciones, creamos una estructura que relacione el primer pid asignado a una direccion de pagina física junto con un contador del numero de referencias a esta página y creamos un vector de tamaño 10 sobre esta estructura.
+
+	#define MAX_ASSOCIATIONS 10
+	struct association {
+		int PID;
+		unsigned long fisical_page_address;   
+		int num_references;		//min 1 porqué cuando creamos una asociacion estamos referenciandola almenos 1 vez
+	};
+
+	extern association pages_association[MAX_ASSOCIATIONS];
+
+d) Define modificaciones del task_struct del proceso
+	Añadimos un atributo que nos indique qué página asociada tiene el proceso.
+	Añadimos un atributo que nos indique el índice del vector de asociaciones que ocupa nuestra página.
+
+e) Codigo de la rutina de servicio pfget
+	--
+
+	
+f) Modificaciones en fork
+	Heredamos la misma página física del proceso padre que ejecuta el fork, de modo que habrá que aumentar en uno el  numero de referencias a la página de éste. Como tenemos en la estructura del pcb padre el índice que ocupa en el vector de asociaciones, accedemos y aumentamos.
+
+	En caso que seamos un proceso que ocupa una nueva página física, estaremos añadiendo una nueva referencia al vector. Nos guardamos el índice en el pcb para poder reusarlo después.
+
+g) Modificaciones en exit
+	En caso que haya más de una referencia asociada a la página del proceso que está por terminar, disminuiremos el numero de referencias a ésta en la estructura pages_association.
+	Si al hacerlo el numero de referencias queda en 0 significa que no hay más procesos que la tengan referenciada, asñi que borramos del vector de asociaciones dicha página (referencia)
+
+h) Ejemplo codigo misma direccion fisica en dos logicas
+	--
+
+i)
+	void main() {
+		int pid = fork();
+		for(int i = 0; i < 2; i++) {
+			pfget(pid);
+			if(pid == 0) {
+				pid = fork();
+			}
+		}
+
+	}
+
+j) Zeos -> código entregado
+
+
+EJERCICIO 2:
+
+a) Conjunto de llamadas de bserver hasta que empieza a aceptar conexiones.
+	Primero llamraá a createServerSocket que internamente ejecuta las llamadas de systema "socket" (nos da el canal), "bind" (le asigna un nombre -crea file_desc- al socket) y "listen" (que indica si éste puede escuchar conexiones) y si todo marcha bien nos habrá devuelto el file_desc de este socket.
+	con este canal tratará de ejecutar una llamada a sistema "accept" que si no nos da error retornará el canal para poder realizar la conexión.
+
+b) Conjunto de llamadas de bclient hasta que empieza a aceptar conexiones.
+	Primero realizará una llamada a "socket" creando el canal para la conexion.
+	Tratará de resolver el host mediante el nombre de éste con la llamada "gethostbyname()"
+	Finalmente tratará de establecer una conexión mediante la llamada "connect"
+
+
+c)
+
+d)
+
+e + g) numero ilimitado de peticiones paralelas
+	Dentro del while(1) del main que mantiene el server on, si no se ha sobrepasado este límite realizará una llamada a una funcion doServiceFork() que tendrá este cuerpo:
+		doServiceFork(int fd) {
+			int pid = fork();
+			if(pid != -1) {
+				childrenAlive += 1;
+				doService(fd);
+				exit(0);
+			}
+			else {
+				perror("Error creating child");
+			}
+		}
+
+		*En doService se realiza el lanzamiento del servidor con el socket creado. 
+
+f + g) numero limitado de peticiones paralelas
+	definimos una constante #define MAX_NUM_CHILDS 5 por ejemplo para que sólo procese un máximo de 5 peticiones.
+	Dentro del while(1) del main que mantiene el server on, si no se ha sobrepasado este límite realizará una llamada a una funcion doServiceFork() que tendrá este cuerpo:
+	doServiceFork(int fd) {
+		int pid = fork();
+		if(pid != -1) {
+			childrenAlive += 1;
+			doService(fd);
+			exit(0);
+		}
+		else {
+			perror("Error creating child");
+		}
+	}
+
+	*En doService se realiza el lanzamiento del servidor con el socket creado. 
+
+
+g) --> código entregado 

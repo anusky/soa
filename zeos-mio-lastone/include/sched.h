@@ -13,7 +13,6 @@
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
-#define MAX_ASSOCIATIONS 10
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
@@ -25,24 +24,12 @@ struct task_struct {
   enum state_t state;		/* State of the process */
   int total_quantum;		/* Total quantum of the process */
   struct stats p_stats;		/* Process stats */
-  unsigned long page_address;
-  int index_association;
 };
-
 
 union task_union {
   struct task_struct task;
   unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
 };
-
-struct association {
-	int PID;
-	unsigned long fisical_page_address;
-};
-
-extern association fisical_association[MAX_ASSOCIATIONS];
-
-
 
 extern union task_union protected_tasks[NR_TASKS+2];
 extern union task_union *task; /* Vector de tasques */
